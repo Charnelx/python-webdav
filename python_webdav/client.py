@@ -4,7 +4,7 @@ Client Module
 
 """
 import os
-import urllib2
+from urllib.parse import urlparse
 import python_webdav.connection as conn
 import python_webdav.file_wrapper as file_wrapper
 from array import array
@@ -14,7 +14,7 @@ class Client(object):
         that might be found in a CLI
     """
 
-    def __init__(self, webdav_server_uri, webdav_path='.', port=80, realm='', allow_bad_cert=False):
+    def __init__(self, webdav_server_uri, webdav_path='.', port=80, realm=''):
         """
 
 The Client module is not yet ready for use. The purpose of this module is to
@@ -24,9 +24,7 @@ while this top level module will hopefully aid in quicker development.
         """
         self._connection_settings = dict(host=webdav_server_uri,
                                          path=webdav_path,
-                                         port=port,
-                                         realm=realm,
-                                         allow_bad_cert=allow_bad_cert)
+                                         port=port, realm=realm)
         path = self._connection_settings['path']
         if path[-1] != '/' and path != '.':
             self._connection_settings['path'] += '/'
@@ -70,8 +68,8 @@ while this top level module will hopefully aid in quicker development.
             :type dest_path: String
 
         """
-        resource_path = "%s/%s" % (
-            self.connection.path.rstrip('/'), file_path.lstrip('/'))
+        resource_path = urlparse.urljoin(self.connection.path,
+                                                 file_path.strip('/'))
         resp, content = self.connection.send_get(resource_path)
         file_name = os.path.basename(file_path)
         write_to_path = os.path.join(dest_path, file_name)
@@ -148,7 +146,7 @@ while this top level module will hopefully aid in quicker development.
 
         # Get the properties for the given path
         if not path:
-            path  = self.connection.path
+            path = self.connection.path
         props = self.client.get_properties(self.connection, path)
         property_lists = []
         for prop in props:
@@ -164,7 +162,7 @@ while this top level module will hopefully aid in quicker development.
             property_lists.append(formatted_list)
             format_string = separator.join(formatted_list)
             if display:
-                print format_string
+                print(format_string)
         return property_lists
 
 # ------------ EXPERIMENTAL -------------- #
@@ -177,10 +175,11 @@ while this top level module will hopefully aid in quicker development.
             return None
 
     def upload_file(self, src_file, path=None):
-        """ Upload a file to the server
+        """
+        Upload a file to the server
 
-            :param src_file: File to be sent.
-            :type src_file: file or String
+        :param src_file: File to be sent.
+        :type src_file: file or String
 
         """
 
@@ -192,6 +191,7 @@ while this top level module will hopefully aid in quicker development.
             src_file.close()
         else:
             file_name = src_file
+
         fileobj = file_wrapper.FileWrapper(file_name, 'rb')
 
         if not path:

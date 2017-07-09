@@ -4,7 +4,7 @@
 import re
 
 from lxml.etree import ElementTree, HTML
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulSoup
 
 
 class Response(object):
