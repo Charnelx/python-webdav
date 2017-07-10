@@ -50,7 +50,11 @@ class Connection(object):
         """
         if not headers:
             headers = {}
-        uri = "%s/%s" % (self.host.rstrip('/'), path.lstrip('/'))
+
+        file_name = path.split('\\')[-1]
+        # uri = "%s/%s" % (self.host.rstrip('/'), path.lstrip('/'))
+        uri = "%s/%s" % (self.host.rstrip('/'), file_name)
+
         try:
             # body = body.read()
             body = body.read_chunked

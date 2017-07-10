@@ -28,6 +28,7 @@ class FileWrapper(object):
         :param callback_size: Step (in percentage) at which callback should
                               be called. This must be larger than 0.
         :type callback_size: int
+
     """
     def __init__(self, name, mode='rb', buffering=-1, force_size=False,
                  callback=None, callback_size=100):
@@ -37,6 +38,7 @@ class FileWrapper(object):
         self.file = open(self.name, mode=mode, buffering=buffering)
 
         # Get options
+        self.file_size = os.path.getsize(self.name)
         self.force_size = force_size
         self.callback = callback
         self.callback_percent = callback_size
@@ -72,13 +74,18 @@ class FileWrapper(object):
 
         return data
 
-    def read_chunked(self, blocksize=1024, chunks=-1):
-        while chunks:
-            data = self.file.read(blocksize)
-            if not data:
-                break
+    def read_chunked(self, blocksize=127000000, chunks=-1):
+        # files less or equal 50 Mb can be fully load into memory
+        if self.file_size <= 5e+7:
+            data = self.file.read(self.file_size)
             yield data
-            chunks -= 1
+        else:
+            while chunks:
+                data = self.file.read(blocksize)
+                if not data:
+                    break
+                yield data
+                chunks -= 1
 
     def close(self):
         self.file.close()
