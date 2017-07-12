@@ -114,7 +114,8 @@ class Client(object):
         """
         if not path.startswith('/'):
             path = self.connection.path + '/' + path
-        self.connection.send_mkcol(path)
+        resp, body = self.connection.send_mkcol(path)
+        return resp, body
 
     def ls(self, path='', list_format=('F', 'C', 'M'), separator='\t',
            display=True):

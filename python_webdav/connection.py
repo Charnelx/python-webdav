@@ -57,9 +57,12 @@ class Connection(object):
 
         try:
             # body = body.read()
-            body = body.read_chunked
-            resp = self.httpcon.request(request_method, uri,
-                                        data=body(), headers=headers)
+            if not isinstance(body, str):
+                body = body.read_chunked
+                resp = self.httpcon.request(request_method, uri,
+                                            data=body(), headers=headers)
+            else:
+                resp = self.httpcon.request(request_method, uri, data=body, headers=headers)
         except requests.ConnectionError:
             raise
 

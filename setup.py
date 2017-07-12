@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name = "python_webdav",
-	version = "0.4",
+	version = "0.4.1",
 	description = "A WebDAV client library",
 	author = "Becky Lewis",
 	author_email = "python-webdav@scaryclam.co.uk",
